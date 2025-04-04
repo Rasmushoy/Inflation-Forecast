@@ -1,0 +1,19 @@
+
+
+Beskæftigelse link:
+
+https://www.statistikbanken.dk/statbank5a/selectvarval/define.asp?PLanguage=0&subword=tabsel&MainTable=AKU101K&PXSId=242879&tablestyle=&ST=SD&buttons=0
+
+
+
+df_niveau_0
+df_niveau_1
+df_niveau_2
+df_beskæftigelse
+df_hpi
+
+
+conda env create -f env.yml --force
+
+
+conda activate env
