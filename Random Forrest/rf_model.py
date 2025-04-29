@@ -2,19 +2,74 @@ import os
 import getpass
 import numpy as np
 import pandas as pd
-from time import time
 from functools import reduce
 import matplotlib.pyplot as plt
 
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LassoCV
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split, TimeSeriesSplit
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+
+def RandomForrest_Forecaster(X, y, forecast_horizon, scaler, trees, last_observation_date):
+    
+    
+    X = X.loc[:last_observation_date]
+    y = y.loc[:last_observation_date]
+    
+    X_scaled = scaler.transform(X)
+
+    rf_models = {}
+
+    for h in range(0, forecast_horizon):
+
+        print(f"\n=== Horizon {h} ===")
+        y_shifted = y.shift(-h)
+        y_shifted = y_shifted.dropna()
+    
+        X_train = X_scaled[:len(y_shifted)]
+        y_train = y_shifted
+    
+        model = RandomForestRegressor(n_estimators=trees, random_state=42)
+        model.fit(X_train, y_train)
+    
+        rf_models[h] = model
+    
+        print(f"Antal træningsobservationer: {len(y_train)}")
+        print(f"Antal Regressor: {model.n_features_in_:.5f}") 
+        
+    # Tag seneste observation (det du forudsiger ud fra)
+    #latest_data_df = X.iloc[[-1]]  # Beholder det som DataFrame med kolonnenavne
+    #latest_data_scaled = scaler.transform(latest_data_df)
+    
+    X_t = X.loc[[last_observation_date]]
+    X_t_scaled = scaler.transform(X_t)
+    
+    rf_forecasts = {}
+
+    for h in range(0, forecast_horizon):
+        forecast = rf_models[h].predict(X_t_scaled)
+        rf_forecasts[h] = forecast[0]  # Gem som float
+        
+     # 4. Datoetiketter
+    start_date = pd.to_datetime(last_observation_date) + pd.DateOffset(months=1)
+    forecast_dates = [start_date + pd.DateOffset(months=h) for h in rf_forecasts.keys()]
+
+    #  Print datoer for de forudsagte måneder
+    print("\nForudsagte måneder:")
+    for date in forecast_dates:
+        print(date.strftime("%Y-%m"))
+        
+        
+    forecast_df = pd.DataFrame({
+        "Dato": forecast_dates,
+        "Inflationsforecast": list(rf_forecasts.values())
+    })
+    
+    return forecast_df
 
 
-
-def lasso_forecast_rolling(X, y, forecast_horizon, last_observation_date, scaler, window_length=108, verbose=True):
+def RandomForest_Forecaster_Rolling(X, y, forecast_horizon, last_observation_date, scaler, trees, window_length=108, verbose=True):
     """
     Forecast inflation using one Random Forest model per horizon (direct forecast), based on Garcia et al. (2017)
     
@@ -39,7 +94,7 @@ def lasso_forecast_rolling(X, y, forecast_horizon, last_observation_date, scaler
     y_window = y.iloc[-window_length:]
 
     # 3. Træn en model per horisont (direct forecast approach)
-    lasso_models = {}
+    rf_models = {}
 
     for h in range(forecast_horizon):
         if verbose: 
@@ -51,41 +106,34 @@ def lasso_forecast_rolling(X, y, forecast_horizon, last_observation_date, scaler
         # Matcher X til y
         X_train = X_window.iloc[:len(y_shifted)]
         y_train = y_shifted
-        
-        tscv = TimeSeriesSplit(n_splits=4)
-        alphas = np.logspace(-4, 1, 100)  # Fra 0.0001 til 10
-        model = LassoCV(alphas=alphas, cv=tscv, max_iter=100000)
 
+        model = RandomForestRegressor(n_estimators=trees, random_state=42)
         model.fit(scaler.transform(X_train), y_train)
 
-        lasso_models[h] = model
+        rf_models[h] = model
 
-        #coef = model.coef_
-      
         if verbose: 
             print(f"Antal træningsobservationer: {len(y_train)}")
-            print(f"Valgt alpha: {model.alpha_:.5f}")
-            print(f"0-koeff = {np.sum(model.coef_ == 0)}, ≠0-koeff = {np.sum(model.coef_ != 0)}")
-            
+            print(f"Antal regressorer: {model.n_features_in_}")
 
     # 4. Lav forecast fra X_t (real-time available data)
     X_t = X.loc[[last_observation_date]]  # Real-time input
     X_t_scaled = scaler.transform(X_t)
 
-    lasso_forecasts = {}
+    rf_forecasts = {}
 
     for h in range(forecast_horizon):
-        forecast = lasso_models[h].predict(X_t_scaled)
-        lasso_forecasts[h] = forecast[0]  # Gem som float
+        forecast = rf_models[h].predict(X_t_scaled)
+        rf_forecasts[h] = forecast[0]  # Gem som float
 
     # 5. Generér datoer
     start_date = pd.to_datetime(last_observation_date) + pd.DateOffset(months=1)
-    forecast_dates = [start_date + pd.DateOffset(months=h) for h in lasso_forecasts.keys()]
+    forecast_dates = [start_date + pd.DateOffset(months=h) for h in rf_forecasts.keys()]
 
     forecast_df = pd.DataFrame({
         "Dato": forecast_dates,
-        "Inflationsforecast": list(lasso_forecasts.values()),
-        "Horizon": list(lasso_forecasts.keys())
+        "Inflationsforecast": list(rf_forecasts.values()),
+        "Horizon": list(rf_forecasts.keys())
     })
 
     if verbose: 
@@ -96,7 +144,7 @@ def lasso_forecast_rolling(X, y, forecast_horizon, last_observation_date, scaler
     return forecast_df
 
 
-def run_rolling_forecast(X, y, forecast_horizon=12, start_date="2012-01", end_date="2015-12", window_length=72):
+def run_rolling_forecast(X, y, trees, scaler, forecast_horizon=12, start_date="2012-01", end_date="2015-12", window_length=72):
     """
     Kører rolling real-time forecast med Random Forest, én forecast per måned (med 12 horisonter per gang)
     """
@@ -107,7 +155,6 @@ def run_rolling_forecast(X, y, forecast_horizon=12, start_date="2012-01", end_da
 
     for date in forecast_dates:
         print(f"\n=== Forecast lavet i: {date.strftime('%Y-%m')} ===")
-        print(date)
 
         # Real-time datasæt
         X_train = X.loc[:date]
@@ -118,16 +165,16 @@ def run_rolling_forecast(X, y, forecast_horizon=12, start_date="2012-01", end_da
             continue
 
         # Skaler træningsdata (rolling window)
-        scaler = StandardScaler()
         scaler.fit(X_train.iloc[-window_length:])
 
         # Lav forecast for 12 horisonter
-        forecast_df = lasso_forecast_rolling(
+        forecast_df = RandomForest_Forecaster_Rolling(
             X=X,
             y=y,
             forecast_horizon=forecast_horizon,
             last_observation_date=date,
             scaler=scaler,
+            trees=trees,
             window_length=window_length, 
             verbose=False
         )
@@ -167,89 +214,3 @@ def evaluate_forecasts(forecast_df, y):
     ).reset_index()
 
     return evaluation, merged
-
-
-############################################################################################################
-############################################################################################################
-
-def lasso_forecast(X, y, forecast_horizon, scaler, last_observation_date):
-    """
-    Træner en LASSO-model til forecasting og forudsiger inflation op til forecast_horizon måneder frem.
-    
-    Parametre:
-        X: pd.DataFrame – features
-        y: pd.Series – target (inflation)
-        last_observation_date: str – f.eks. '2024-12-01'
-        forecast_horizon: int – antal måneder frem
-        plot: bool – om der skal vises plot
-    
-    Returnerer:
-        forecast_df: pd.DataFrame med datoer og forudsagte værdier
-    """
-
-    # 1. Split data
-    X = X.loc[:last_observation_date]
-    y = y.loc[:last_observation_date]
-    
-    X_scaled = scaler.transform(X)
-    
-    # 2. Træn modeller for 1 til forecast_horizon måneder frem
-    lasso_models = {}
-
-    #for h in range(1, forecast_horizon + 1):
-    for h in range(0, forecast_horizon):
-        print(f"\n=== Horizon {h} ===")
-
-        y_shifted = y.shift(-h)
-        y_shifted = y_shifted.dropna()
-     
-        #X_train = X[:len(y_shifted), :]
-        X_train = X_scaled[:len(y_shifted)]
-
-        y_train = y_shifted
-        
-        #print(y_shifted)
-        
-        tscv = TimeSeriesSplit(n_splits=4)
-        alphas = np.logspace(-4, 1, 100)  # Fra 0.0001 til 10
-        model = LassoCV(alphas=alphas, cv=tscv, max_iter=100000)
-
-    
-        #model = LassoCV(cv=tscv, random_state=42, max_iter=100000)
-        #model = LassoCV(cv=5, random_state=42, max_iter=100000)
-        #model.fit(X_train, y_train)
-        model.fit(X_train, y_train)
-        lasso_models[h] = model
-        
-        coef = model.coef_
-        print(f"Antal træningsobservationer: {len(y_train)}")
-        print(f"Valgt alpha: {model.alpha_:.5f}")
-        print(f"0-koeff = {np.sum(coef == 0)}, ≠0-koeff = {np.sum(coef != 0)}")
-    
-    # 3. Forudsig fremtiden
-    X_t = X.loc[[last_observation_date]]
-    X_t_scaled = scaler.transform(X_t)
-
-    
-    forecasts = {}
-    for h in range(0, forecast_horizon):
-        forecast_value = lasso_models[h].predict(X_t_scaled)
-        forecasts[h] = forecast_value[0]
-
-    # 4. Datoetiketter
-    start_date = pd.to_datetime(last_observation_date) + pd.DateOffset(months=1)
-    forecast_dates = [start_date + pd.DateOffset(months=h) for h in forecasts.keys()]
-
-    # 👇 Print datoer for de forudsagte måneder
-    print("\nForudsagte måneder:")
-    for date in forecast_dates:
-        print(date.strftime("%Y-%m"))
-        
-        
-    forecast_df = pd.DataFrame({
-        "Dato": forecast_dates,
-        "Inflationsforecast": list(forecasts.values()),
-        "Horizon": list(forecasts.keys())
-    })
-   
-    return forecast_df
