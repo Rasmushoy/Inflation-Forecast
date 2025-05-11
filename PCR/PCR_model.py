@@ -17,7 +17,7 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 
 def pcr_forecaster(X, y, forecast_horizon, last_observation_date, scaler,
-                   variance_threshold=0.95, window_length=108, verbose=True):
+                   variance_threshold=0.95, window_length=108, verbose=True, return_models=False):
     """
     Forecasts inflation using Principal Component Regression (PCR), one model per forecast horizon.
 
@@ -111,7 +111,11 @@ def pcr_forecaster(X, y, forecast_horizon, last_observation_date, scaler,
         "Horizon": list(pcr_forecasts.keys())
     })
 
-    return forecast_df
+    if return_models:
+        return forecast_df, pcr_models
+    else:
+        return forecast_df
+    
 
 
 

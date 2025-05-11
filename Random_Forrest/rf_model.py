@@ -13,7 +13,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 
 # RandomForest_Forecaster_Rolling
-def RandomForest_Forecaster(X, y, forecast_horizon, last_observation_date, scaler, trees = 200, window_length=108, verbose=True):
+def RandomForest_Forecaster(X, y, forecast_horizon, last_observation_date, scaler, trees = 200, window_length=108, verbose=True, return_models=False):
     """
     Forecast inflation using one Random Forest model per forecast horizon (direct forecast),
     based on the method in Garcia et al. (2017).
@@ -91,11 +91,15 @@ def RandomForest_Forecaster(X, y, forecast_horizon, last_observation_date, scale
         "Horizon": list(rf_forecasts.keys())
     })
 
-    return forecast_df
+    if return_models:
+        return forecast_df, rf_models
+    else:
+        return forecast_df
 
 
 
-def run_rolling_forecast(X, y, forecast_horizon=12, start_date="2012-01", end_date="2015-12", window_length=72, Trees=200):
+
+def run_rolling_forecast(X, y, forecast_horizon=12, start_date="2012-01", end_date="2015-12", window_length=72, trees=200):
     """
     Runs a rolling real-time forecast using Random Forest.
     One forecast is made per month, with predictions for the next `forecast_horizon` periods.
@@ -139,7 +143,7 @@ def run_rolling_forecast(X, y, forecast_horizon=12, start_date="2012-01", end_da
             forecast_horizon=forecast_horizon,
             last_observation_date=date,
             scaler=scaler,
-            trees=Trees,
+            trees=trees,
             window_length=window_length,
             verbose=False
         )
