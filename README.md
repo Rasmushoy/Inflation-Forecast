@@ -75,4 +75,5 @@ MIT License or your preferred license.
 ## 👤Author
 
 Rasmus & Mattias
+
 M.Sc. Student, University of Copenhagen
