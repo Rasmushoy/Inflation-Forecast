@@ -205,18 +205,18 @@ Tillidsindikator for serviceerhverv
 Detailhandel i alt (indeks)
 HICP, EU (inflation)
 C25 Index Value
-01 Fødevarer og ikke-alkoholiske drikkevarer
-02. Alkoholiske drikkevarer og tobak
-03. Beklædning og fodtøj
-04. Boligbenyttelse, elektricitet og opvarmning
-05. Møbler, husholdningsudstyr og husholdningstjenester
-06. Sundhed
-07. Transport
-08. Kommunikation
-09. Fritid og kultur
-10. Uddannelse
-11. Restauranter og hoteller
-12. Andre varer og tjenester
+inflation_lag1
+inflation_lag2
+inflation_lag3
+inflation_lag4
+inflation_lag5
+inflation_lag6
+inflation_lag7
+inflation_lag8
+inflation_lag9
+inflation_lag10
+inflation_lag11
+inflation_lag12
 01.1 Fødevarer
 01.2 Ikke-alkoholiske drikkevarer
 02.1 Alkoholiske drikkevarer
@@ -261,16 +261,3 @@ C25 Index Value
 12.5 Forsikring
 12.6 Finansielle tjenester
 12.7 Andre tjenester
-00 Forbrugerprisindekset i alt
-inflation_lag1
-inflation_lag2
-inflation_lag3
-inflation_lag4
-inflation_lag5
-inflation_lag6
-inflation_lag7
-inflation_lag8
-inflation_lag9
-inflation_lag10
-inflation_lag11
-inflation_lag12
