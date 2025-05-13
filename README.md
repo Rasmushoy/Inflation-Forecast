@@ -68,7 +68,7 @@ pip install -r requirements.txt
 
 *(Optional: add a sample plot of forecast vs. actual inflation)*
 
-## License
+## 📝License
 
 MIT License or your preferred license.
 
