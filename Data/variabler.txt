@@ -217,47 +217,4 @@ inflation_lag9
 inflation_lag10
 inflation_lag11
 inflation_lag12
-01.1 Fødevarer
-01.2 Ikke-alkoholiske drikkevarer
-02.1 Alkoholiske drikkevarer
-02.2 Tobak
-03.1 Beklædning
-03.2 Fodtøj
-04.1 Faktisk husleje
-04.2 Beregnet lejeværdi af bolig
-04.3 Vedligeholdelse og reparation af bolig
-04.4 Vandforsyning og andre tjenester i forbindelse med boligen
-04.5 Elektricitet, gas og andet brændsel
-05.1 Møbler og boligudstyr, tæpper og anden gulvbelægning
-05.2 Boligtekstiler
-05.3 Husholdningsapparater og reparation heraf
-05.4 Glas, service og husholdningsredskaber
-05.5 Værktøj og udstyr til hus og have
-05.6 Andre varer og tjenester til husholdningen
-06.1 Medicinske produkter, apparater og medicinsk udstyr
-06.2 Ambulant behandling
-06.3 Hospitalstjenester
-07.1 Køb af køretøjer
-07.2 Drift af personlige transportmidler
-07.3 Transporttjenester
-08.1 Posttjenester
-08.2 Telefon- og telefaxudstyr
-08.3 Teletjenester
-09.1 Audiovisuelt og fotografisk udstyr og dataudstyr
-09.2 Andre større varige forbrugsgoder til fritids- og kulturaktiviteter
-09.3 Andet tilbehør og udstyr til fritid, haver og kæledyr
-09.4 Fritids- og kulturtjenester
-09.5 Aviser, bøger og papirvarer
-09.6 Pakkerejser
-10.1 Førskoleundervisning og primær undervisning
-10.2 Ungdomsuddannelse
-10.4 Videregående uddannelse
-10.5 Undervisning uden for niveau
-11.1 Restauranter, cafeer og kantiner mv.
-11.2 Overnatningsfaciliteter
-12.1 Personlig pleje
-12.3 Andre personlige effekter
-12.4 Daginstitutioner og social forsorg
-12.5 Forsikring
-12.6 Finansielle tjenester
-12.7 Andre tjenester
+00 Forbrugerprisindekset i alt
