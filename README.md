@@ -52,8 +52,8 @@ Implemented forecasting models include:
 
 Main packages:
 
-* `pandas`, `numpy`, `scikit-learn`
-* `statsmodels`, `xgboost`
+* `pandas`, `numpy`, 
+* `scikit-learn`, `xgboost`
 * `matplotlib`, `seaborn`
 
 Install everything via:
