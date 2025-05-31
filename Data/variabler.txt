@@ -217,4 +217,5 @@ inflation_lag9
 inflation_lag10
 inflation_lag11
 inflation_lag12
+inflation_rolling_mean3
 00 Forbrugerprisindekset i alt
