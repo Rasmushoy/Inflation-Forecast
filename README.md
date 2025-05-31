@@ -62,10 +62,6 @@ Install everything via:
 pip install -r requirements.txt
 ```
 
-## Example Forecast
-
-*(Optional: add a sample plot of forecast vs. actual inflation)*
-
 ## 👤Author
 
 Rasmus & Mattias
