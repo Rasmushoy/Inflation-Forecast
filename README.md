@@ -6,8 +6,7 @@ This repository contains code and data for forecasting Danish inflation using a 
 
 ```
 .
-├── Data/                      # Cleaned and structured data (monthly time series)
-├── ARIMA/                    # Classical ARIMA benchmark models
+├── Data/                     # Cleaned and structured data (monthly time series)
 ├── Lasso/                    # LASSO regression models
 ├── PCR/                      # Principal Component Regression
 ├── Random_Forrest/           # Random Forest forecasting models
@@ -36,7 +35,6 @@ For more, see the appendix in the notebook: `data_handling.ipynb`.
 
 Implemented forecasting models include:
 
-* **ARIMA** (baseline statistical model)
 * **LASSO** (regularized linear regression)
 * **PCR** (dimensionality reduction)
 * **Random Forest** (ensemble of decision trees)
@@ -63,14 +61,6 @@ Install everything via:
 ```bash
 pip install -r requirements.txt
 ```
-
-## Example Forecast
-
-*(Optional: add a sample plot of forecast vs. actual inflation)*
-
-## 📝License
-
-MIT License or your preferred license.
 
 ## 👤Author
 
